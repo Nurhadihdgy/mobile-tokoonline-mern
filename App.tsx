@@ -1,6 +1,6 @@
 import React from "react";
+import { StatusBar } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
-import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 import AppNavigator from "./src/navigations/AppNavigator";
@@ -13,7 +13,7 @@ export default function App() {
       <SafeAreaView style={{ flex: 1, backgroundColor: "#111827" }}>
         <AuthProvider>
         <NavigationContainer ref={(ref) => setNavigation(ref)}>
-          <StatusBar style="light" />
+          <StatusBar barStyle="light-content" backgroundColor="#111827" />
           <AppNavigator />
         </NavigationContainer>
         </AuthProvider>

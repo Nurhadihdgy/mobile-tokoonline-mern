@@ -9,7 +9,7 @@ import {
   Image,
 } from "react-native";
 import { useState } from "react";
-import * as ImagePicker from "expo-image-picker";
+import { launchImageLibrary } from "react-native-image-picker";
 import { createProduct } from "../services/product";
 
 export default function AddProductScreen({ navigation }: any) {
@@ -25,12 +25,12 @@ export default function AddProductScreen({ navigation }: any) {
   const [loading, setLoading] = useState(false);
 
   const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    const result = await launchImageLibrary({
+      mediaType: "photo",
       quality: 0.8,
     });
 
-    if (!result.canceled) {
+    if (result.assets && result.assets.length > 0) {
       setImage(result.assets[0]);
     }
   };

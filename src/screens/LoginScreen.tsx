@@ -1,6 +1,6 @@
 import { View, Text, TextInput, Pressable, StyleSheet, Alert } from "react-native";
 import { useContext, useState } from "react";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "react-native-vector-icons/Ionicons";
 import API from "../services/api";
 import { saveAuth } from "../services/auth";
 import { AuthContext } from "../context/AuthContext";

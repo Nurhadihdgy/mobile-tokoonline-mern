@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { useState, useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import { Ionicons } from "@expo/vector-icons"; // Pastikan install expo-vector-icons
+import Ionicons from "react-native-vector-icons/Ionicons";
 import { getUser, getToken, logoutService } from "../services/auth";
 import { AuthContext } from "../context/AuthContext";
 import { useContext } from "react";
