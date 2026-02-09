@@ -19,6 +19,7 @@ import OrderHistoryScreen from "../screens/OrderHistoryUserScreen";
 
 // Services
 import API from "../services/api";
+import AdminOrderDashboard from "../screens/AdminOrderDashboard";
 
 export type RootStackParamList = {
   MainTabs: undefined;
@@ -30,6 +31,7 @@ export type RootStackParamList = {
   EditProduct: { id: string };
   OrderHistoryUser: undefined;
   Cart: undefined;
+  AdminOrderDashboard: undefined;
   Checkout: undefined;
 };
 
@@ -85,6 +87,7 @@ export default function AppNavigator() {
             <>
               <Stack.Screen name="AddProduct" component={AddProductScreen} />
               <Stack.Screen name="EditProduct" component={EditProductScreen} />
+              <Stack.Screen name="AdminOrderDashboard" component={AdminOrderDashboard} />
             </>
           )}
           {role === "user" && (

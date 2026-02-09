@@ -29,9 +29,9 @@ export default function HomeScreen({ navigation }: any) {
       const token = await getToken();
       const userData = await getUser();
       setIsAuth(!!token);
-      setUser(userData ? { 
-        name: userData.name, 
-        role: userData.role as "admin" | "user" 
+      setUser(userData ? {
+        name: userData.name,
+        role: userData.role as "admin" | "user"
       } : null);
     } catch (error) {
       console.error("Auth check failed", error);
@@ -45,17 +45,37 @@ export default function HomeScreen({ navigation }: any) {
   );
 
   const handleLogout = async () => {
-    Alert.alert("Konfirmasi", "Apakah Anda yakin ingin keluar?", [
-      { text: "Batal", style: "cancel" },
-      {
-        text: "Keluar",
-        style: "destructive",
-        onPress: async () => {
+  Alert.alert("Konfirmasi", "Apakah Anda yakin ingin keluar?", [
+    { text: "Batal", style: "cancel" },
+    {
+      text: "Keluar",
+      style: "destructive",
+      onPress: async () => {
+        try {
+          // 1. Jalankan proses logout (menghapus token dan update state AuthContext)
           await logout();
-        },
+
+          // 2. Tampilkan alert sukses dengan callback pada tombol OK
+          Alert.alert("Sukses", "Anda telah berhasil keluar.", [
+            {
+              text: "OK",
+              onPress: () => {
+                // 3. Reset navigasi untuk "refresh" aplikasi secara bersih
+                navigation.reset({
+                  index: 0,
+                  routes: [{ name: "MainTabs" }], // Kembali ke layar utama publik
+                });
+              },
+            },
+          ]);
+        } catch (error) {
+          Alert.alert("Error", "Gagal melakukan logout.");
+          console.error("Logout error:", error);
+        }
       },
-    ]);
-  };
+    },
+  ]);
+};
 
   return (
     <SafeAreaView style={styles.container}>
@@ -66,8 +86,8 @@ export default function HomeScreen({ navigation }: any) {
             <Text style={styles.logoText}>Toko Online</Text>
             <Text style={styles.tagline}>Premium MERN Collection</Text>
           </View>
-          <Pressable 
-            style={styles.cartIconBtn} 
+          <Pressable
+            style={styles.cartIconBtn}
             onPress={() => isAuth ? navigation.navigate("Cart") : navigation.navigate("Login")}
           >
             <Ionicons name="bag-handle-outline" size={28} color="#60a5fa" />
@@ -95,27 +115,58 @@ export default function HomeScreen({ navigation }: any) {
 
               <View style={styles.actionContainer}>
                 {user?.role === "admin" ? (
-                  <Pressable 
-                    style={[styles.actionBtn, styles.adminBtn]} 
-                    onPress={() => navigation.navigate("AddProduct")}
-                  >
-                    <Ionicons name="add-circle-outline" size={20} color="#fff" />
-                    <Text style={styles.actionBtnText}>Tambah Produk</Text>
-                  </Pressable>
-                ) : (
-                  <Pressable 
-                    style={[styles.actionBtn, styles.userBtn]} 
-                    onPress={() => navigation.navigate("Cart")}
-                  >
-                    <Ionicons name="cart-outline" size={20} color="#fff" />
-                    <Text style={styles.actionBtnText}>Cek Keranjang</Text>
-                  </Pressable>
-                )}
+                  /* TAMPILAN TOMBOL ADMIN YANG RAPI */
+                  <View style={{ flex: 1 }}>
+                    <View style={styles.adminActionGrid}>
+                      <Pressable
+                        style={[styles.actionBtn, styles.adminBtn]}
+                        onPress={() => navigation.navigate("AddProduct")}
+                      >
+                        <Ionicons name="add-circle-outline" size={20} color="#fff" />
+                        <Text style={styles.actionBtnText}>Tambah Produk</Text>
+                      </Pressable>
 
-                <Pressable style={styles.logoutBtn} onPress={handleLogout}>
-                  <Ionicons name="log-out-outline" size={20} color="#f87171" />
-                  <Text style={styles.logoutBtnText}>Keluar</Text>
-                </Pressable>
+                      <Pressable
+                        style={[styles.actionBtn, styles.manageBtn]}
+                        onPress={() => navigation.navigate("AdminOrderDashboard")}
+                      >
+                        <Ionicons name="list-outline" size={20} color="#fff" />
+                        <Text style={styles.actionBtnText}>Kelola Pesanan</Text>
+                      </Pressable>
+                    </View>
+
+                    <Pressable style={[styles.logoutBtn, { marginTop: 12 }]} onPress={handleLogout}>
+                      <Ionicons name="log-out-outline" size={20} color="#f87171" />
+                      <Text style={styles.logoutBtnText}>Keluar dari Panel Admin</Text>
+                    </Pressable>
+                  </View>
+                ) : (
+                  /* TAMPILAN TOMBOL USER */
+                  <View style={{ flex: 1 }}>
+                    <View style={styles.adminActionGrid}>
+                      <Pressable
+                        style={[styles.actionBtn, styles.userBtn]}
+                        onPress={() => navigation.navigate("Cart")}
+                      >
+                        <Ionicons name="cart-outline" size={18} color="#fff" />
+                        <Text style={styles.actionBtnText}>Keranjang</Text>
+                      </Pressable>
+
+                      <Pressable
+                        style={[styles.actionBtn, styles.historyBtn]}
+                        onPress={() => navigation.navigate("OrderHistoryUser")}
+                      >
+                        <Ionicons name="receipt-outline" size={18} color="#fff" />
+                        <Text style={styles.actionBtnText}>Riwayat</Text>
+                      </Pressable>
+                    </View>
+
+                    <Pressable style={[styles.logoutBtn, { marginTop: 12 }]} onPress={handleLogout}>
+                      <Ionicons name="log-out-outline" size={20} color="#f87171" />
+                      <Text style={styles.logoutBtnText}>Keluar</Text>
+                    </Pressable>
+                  </View>
+                )}
               </View>
             </View>
           ) : (
@@ -127,8 +178,8 @@ export default function HomeScreen({ navigation }: any) {
               <Text style={styles.guestDesc}>
                 Login sekarang untuk mendapatkan akses penuh ke fitur belanja kami.
               </Text>
-              <Pressable 
-                style={styles.loginBtn} 
+              <Pressable
+                style={styles.loginBtn}
                 onPress={() => navigation.navigate("Login")}
               >
                 <Text style={styles.loginBtnText}>Masuk ke Akun</Text>
@@ -157,13 +208,19 @@ export default function HomeScreen({ navigation }: any) {
 }
 
 const styles = StyleSheet.create({
+  // LAYOUT UTAMA
   container: {
     flex: 1,
-    backgroundColor: "#0f172a", // Navy Darker
+    backgroundColor: "#0f172a",
   },
   scrollContent: {
     padding: 24,
   },
+  actionContainer: {
+    marginTop: 20,
+  },
+
+  // HEADER
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -187,17 +244,19 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 12,
   },
+
+  // AUTH CARD & USER INFO
   authCard: {
     backgroundColor: "#1e293b",
     borderRadius: 24,
     padding: 20,
     borderWidth: 1,
     borderColor: "#334155",
+    elevation: 8,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.2,
     shadowRadius: 15,
-    elevation: 8,
   },
   userInfoRow: {
     flexDirection: "row",
@@ -238,33 +297,67 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: "bold",
   },
-  actionContainer: {
-    marginTop: 20,
-    flexDirection: "row",
+
+  // GRID TOMBOL AKSI (ADMIN & USER)
+  adminActionGrid: {
+    flexDirection: 'row',
     gap: 10,
+    width: '100%',
+    marginTop: 20,
   },
   actionBtn: {
-    flex: 2,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 12,
-    borderRadius: 12,
-    gap: 8,
-  },
-  adminBtn: { backgroundColor: "#2563eb" },
-  userBtn: { backgroundColor: "#2563eb" },
-  logoutBtn: {
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgba(248, 113, 113, 0.1)",
-    borderRadius: 12,
-    gap: 6,
+    paddingVertical: 14,
+    borderRadius: 14,
+    gap: 8,
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
   },
-  actionBtnText: { color: "#fff", fontWeight: "700", fontSize: 13 },
-  logoutBtnText: { color: "#f87171", fontWeight: "700", fontSize: 13 },
+  actionBtnText: {
+    color: "#fff",
+    fontWeight: "700",
+    fontSize: 13,
+  },
+
+  // WARNA TOMBOL KHUSUS
+  adminBtn: { 
+    backgroundColor: "#2563eb", 
+  },
+  manageBtn: { 
+    backgroundColor: "#7c3aed", 
+  },
+  userBtn: { 
+    backgroundColor: "#2563eb", 
+  },
+  historyBtn: { 
+    backgroundColor: "#059669", 
+  },
+
+  // TOMBOL KELUAR (LOGOUT)
+  logoutBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(248, 113, 113, 0.1)",
+    paddingVertical: 12,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "rgba(248, 113, 113, 0.2)",
+    gap: 8,
+    marginTop: 12,
+  },
+  logoutBtnText: { 
+    color: "#f87171", 
+    fontWeight: "700", 
+    fontSize: 13 
+  },
+
+  // GUEST CONTENT (TAMPILAN JIKA BELUM LOGIN)
   guestContent: {
     alignItems: "center",
     paddingVertical: 10,
@@ -301,7 +394,13 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     gap: 10,
   },
-  loginBtnText: { color: "#fff", fontWeight: "800", fontSize: 15 },
+  loginBtnText: { 
+    color: "#fff", 
+    fontWeight: "800", 
+    fontSize: 15 
+  },
+
+  // MENU GRID & NAVIGASI BAWAH
   sectionLabel: {
     color: "#94a3b8",
     fontSize: 14,
