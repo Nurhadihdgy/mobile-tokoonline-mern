@@ -34,7 +34,7 @@ export default function MainTabNavigator() {
         tabBarStyle: {
           backgroundColor: "#111827",
           borderTopColor: "#1f2937",
-          height: 64 + insets.bottom,
+          height: 25 + insets.bottom,
           paddingBottom: insets.bottom,
         },
         tabBarActiveTintColor: "#60a5fa",
